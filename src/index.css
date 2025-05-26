@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #141414;
+  --card: #f9f9f9;
+  --card-foreground: #141414;
+  --primary: #3b82f6;
+  --muted-foreground: #6b7280;
+
+  color-scheme: light;
+}
+
+.dark {
+  --background: #141414;
+  --foreground: #f4f4f5;
+  --card: #1c1c1c;
+  --card-foreground: #f4f4f5;
+  --primary: #60a5fa;
+  --muted-foreground: #a1a1aa;
+
+  color-scheme: dark;
+}
+
+body {
+  @apply font-sans bg-background text-foreground;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+a {
+  @apply text-primary font-medium;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+strong{font-weight: 700;}
