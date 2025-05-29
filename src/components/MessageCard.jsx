@@ -21,7 +21,6 @@ import {
           )}
         </CardContent>
         <CardFooter className="text-sm text-muted-foreground">
-          Última actualización: ahora
         </CardFooter>
       </Card>
     )

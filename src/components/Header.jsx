@@ -19,10 +19,10 @@ export default function Header() {
   </div>
       <div className="flex items-center space-x-6">
         <nav className="hidden md:flex items-center space-x-4 text-sm font-medium text-muted-foreground">
-          <a href="#" className="hover:text-primary">Docs</a>
-          <a href="#" className="hover:text-primary">Comparador</a>
-          <a href="#" className="hover:text-primary">Combinaciones</a>
-          <a href="#" className="hover:text-primary">Resultados</a>
+          <a href="#" className="hover:text-primary">Dignidad</a>
+          <a href="#" className="hover:text-primary">Transparencia</a>
+          <a href="#" className="hover:text-primary">Compromiso</a>
+          <a href="#" className="hover:text-primary">Acción real</a>
         </nav>
       </div>
       <div className="flex items-center space-x-4">
