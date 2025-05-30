@@ -14,21 +14,124 @@ import cow_home from "./assets/cow-home.jpg";
 import cow_black_home from "./assets/cow-black-home.jpg";
 import { Button } from "@/components/ui/button";
 import { StatCard } from "./components/StatCard";
+import { PersonStanding } from "lucide-react";
+import { Rabbit } from "lucide-react";
+import { Fish } from "lucide-react";
+import { Leaf } from "lucide-react";
+import {
+  meatConsumptionData,
+  populationGrowthData,
+  fishConsumptionData,
+  vegetableConsumptionData,
+} from "./data/chartData";
 
+import { ResponsiveContainer, LineChart, Line, Tooltip, XAxis } from "recharts";
 
 function App() {
-  
-  const meatConsumptionData = [
-    { label: "1980", value: 136.2 },
-    { label: "1985", value: 158.2 },
-    { label: "1990", value: 183.7 },
-    { label: "1995", value: 209.7 },
-    { label: "2000", value: 234.3 },
-    { label: "2005", value: 260.6 },
-    { label: "2010", value: 287.3 },
-    { label: "2015", value: 314.7 },
-    { label: "2020", value: 343.3 },
-  ];
+  // CONSUMO DE CARNE /////////////////////////////////////////////////////////////////////////////
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      const carne = Math.round(
+        payload.find((p) => p.dataKey === "carne")?.value ?? 0
+      );
+      const poblacion = Math.round(
+        payload.find((p) => p.dataKey === "poblacion")?.value ?? 0
+      );
+
+      return (
+        <div className="bg-neutral-800 p-3 rounded text-white text-sm">
+          <p className="mb-1">{label}</p>
+          <p className="text-red-500">Carne: {carne}%</p>
+          <p className="text-neutral-50">Población: {poblacion}%</p>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  const meatBase = meatConsumptionData[0].value;
+  const populationBase = populationGrowthData[0].value;
+
+  const combinedData = meatConsumptionData.map((item, index) => ({
+    year: item.label,
+    carne: ((item.value - meatBase) / meatBase) * 100,
+    poblacion: populationGrowthData[index] // aseguramos alineación
+      ? ((populationGrowthData[index].value - populationBase) /
+          populationBase) *
+        100
+      : null,
+  }));
+
+  // CONSUMO DE PESCADO /////////////////////////////////////////////////////////////////////////////
+
+  const CustomTooltipFish = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      const pescado = Math.round(
+        payload.find((p) => p.dataKey === "pescado")?.value ?? 0
+      );
+      const poblacion = Math.round(
+        payload.find((p) => p.dataKey === "poblacion")?.value ?? 0
+      );
+
+      return (
+        <div className="bg-neutral-800 p-3 rounded text-white text-sm">
+          <p className="mb-1">{label}</p>
+          <p className="text-cyan-500">Pescado: {pescado}%</p>
+          <p className="text-neutral-50">Población: {poblacion}%</p>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  const fishBase = fishConsumptionData[0].value;
+  const combinedDataFish = fishConsumptionData.map((item, index) => ({
+    year: item.label,
+    pescado: ((item.value - fishBase) / fishBase) * 100,
+    poblacion: populationGrowthData[index] // aseguramos alineación
+      ? ((populationGrowthData[index].value - populationBase) /
+          populationBase) *
+        100
+      : null,
+  }));
+
+  // CONSUMO DE VERDURAS /////////////////////////////////////////////////////////////////////////////
+
+  const CustomTooltipVegetables = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      const verduras = Math.round(
+        payload.find((p) => p.dataKey === "verduras")?.value ?? 0
+      );
+      const poblacion = Math.round(
+        payload.find((p) => p.dataKey === "poblacion")?.value ?? 0
+      );
+
+      return (
+        <div className="bg-neutral-800 p-3 rounded text-white text-sm">
+          <p className="mb-1">{label}</p>
+          <p className="text-emerald-500">Verduras: {verduras}%</p>
+          <p className="text-neutral-50">Población: {poblacion}%</p>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  const verdurasBase = vegetableConsumptionData[0].value;
+  const combinedDataVegetables = vegetableConsumptionData.map(
+    (item, index) => ({
+      year: item.label,
+      verduras: ((item.value - verdurasBase) / verdurasBase) * 100,
+      poblacion: populationGrowthData[index] // aseguramos alineación
+        ? ((populationGrowthData[index].value - populationBase) /
+            populationBase) *
+          100
+        : null,
+    })
+  );
 
   return (
     <div className="w-full min-h-screen bg-background text-foreground">
@@ -195,60 +298,266 @@ function App() {
         </div>
       </div>
       <section className="mx-auto mt-10 max-w-[1200px] px-4 flex flex-col items-center">
-  {/* Parte superior: Imagen + Texto */}
-  <div className="w-full flex flex-col md:flex-row items-center justify-between">
-    {/* Imagen a la izquierda */}
-    <div className="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
-      <img
-        src={cow_home}
-        alt="Descripción de la imagen"
-        className="max-w-[500px] object-cover dark:hidden"
-      />
-      <img
-        src={cow_black_home}
-        alt="Descripción de la imagen"
-        className="max-w-[500px] object-cover hidden dark:block"
-      />
-    </div>
+        {/* Parte superior: Imagen + Texto */}
+        <div className="w-full flex flex-col md:flex-row items-center justify-between">
+          {/* Imagen a la izquierda */}
+          <div className="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
+            <img
+              src={cow_home}
+              alt="Descripción de la imagen"
+              className="max-w-[500px] object-cover dark:hidden"
+            />
+            <img
+              src={cow_black_home}
+              alt="Descripción de la imagen"
+              className="max-w-[500px] object-cover hidden dark:block"
+            />
+          </div>
 
-    {/* Texto a la derecha */}
-    <div className="w-full md:w-1/2 flex justify-center">
-      <div className="max-w-md text-center">
-        <h1 className="font-cormorant text-center text-5xl md:text-6xl font-light tracking-none text-foreground">
-          Detengamos el abuso cárnico
-        </h1>
-        <p className="text-md pt-4 font-light tracking-none text-gray-300">
-          <strong>Comer carne no es el problema</strong>, el abuso sí. Nuestro cuerpo puede beneficiarse de proteínas animales, pero en equilibrio. El consumo excesivo daña nuestra salud, al planeta y a millones de animales. Apostamos por una alimentación consciente, justa y sostenible, sin extremos, pero con responsabilidad.
-        </p>
-      </div>
-    </div>
-  </div>
+          {/* Texto a la derecha */}
+          <div className="w-full md:w-1/2 flex justify-center">
+            <div className="max-w-md text-center">
+              <h1 className="font-cormorant text-center text-5xl md:text-6xl font-light tracking-none text-foreground">
+                Detengamos el abuso cárnico
+              </h1>
+              <p className="text-md pt-4 font-light tracking-none text-gray-300">
+                <strong>Comer carne no es el problema</strong>, el abuso sí.
+                Nuestro cuerpo puede beneficiarse de proteínas animales, pero en
+                equilibrio. El consumo excesivo daña nuestra salud, al planeta y
+                a millones de animales. Apostamos por una alimentación
+                consciente, justa y sostenible, sin extremos, pero con
+                responsabilidad.
+              </p>
+            </div>
+          </div>
+        </div>
 
-  {/* Parte inferior: 3 bloques */}
-  <div className="mt-10 flex flex-col md:flex-row gap-4 w-full justify-center">
-    <div className="flex-1">
-      <StatCard
-        title="consumo total de carne en millones de toneladas métricas por año"
-        value="+2.350"
-        changeText="+180.1% desde el mes pasado"
-        data={meatConsumptionData}
-      />
-    </div>
-    <div className="flex-1 bg-neutral-800 p-6 text-center rounded-lg">
-      <h3 className="text-xl font-semibold mb-2">Planeta</h3>
-      <p className="text-sm text-gray-300">
-        La producción cárnica es una de las principales causas de emisiones y deforestación.
-      </p>
-    </div>
-    <div className="flex-1 bg-neutral-800 p-6 text-center rounded-lg">
-      <h3 className="text-xl font-semibold mb-2">Conciencia</h3>
-      <p className="text-sm text-gray-300">
-        Elegir con criterio significa respetar la vida sin caer en extremos alimentarios.
-      </p>
-    </div>
-  </div>
-</section>
+        {/* Parte inferior: 3 bloques */}
+        <div className="mt-10 flex flex-col md:flex-row gap-4 w-full justify-center">
+          <div className="flex-1">
+            <StatCard
+              title="Incremento relativo 1980–2020: carne vs población"
+              value={<span className="text-red-500">+152,21 %</span>}
+              changeText={
+                <>
+                  El consumo mundial de carne aumentó un{" "}
+                  <strong>152,21 %</strong> desde 1980, mientras que la
+                  población creció un <strong>77,27 %</strong> en ese mismo
+                  periodo.
+                  <div className="pt-4 flex items-center gap-2">
+                    <Rabbit className="w-6 h-6  text-red-500" /> Incremento
+                    consumo de carne mundial
+                  </div>
+                  <div className="pt-1 flex items-center gap-2">
+                    <PersonStanding className="w-6 h-6 text-neutral-50" />{" "}
+                    Incremento población mundial
+                  </div>
+                  <div className="mt-4 rounded-xl overflow-hidden">
+                    <ResponsiveContainer width="100%" height={160}>
+                      <LineChart data={combinedData}>
+                        <XAxis
+                          dataKey="year"
+                          tickFormatter={(year) =>
+                            ["1980", "1990", "2000", "2010", "2020"].includes(
+                              year
+                            )
+                              ? year
+                              : ""
+                          }
+                        />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Line
+                          type="monotone"
+                          dataKey="carne"
+                          stroke="#ef4444"
+                          strokeWidth={2}
+                          dot={false}
+                          name="Carne"
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="poblacion"
+                          stroke="#fafafa"
+                          strokeWidth={2}
+                          dot={false}
+                          name="Población"
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                    <div className="pt-2 font-extralight">
+                      <p>FUENTES CONSULTADAS</p>
+                      <p>
+                        <a href="https://population.un.org/wpp" target="_blank">
+                          ONU – World Population Prospects
+                        </a>
+                      </p>
+                      <p>
+                        <a
+                          href="https://ourworldindata.org/meat-production"
+                          target="_blank"
+                        >
+                          FAO Food and Agriculture Organization – FAOSTAT
+                        </a>
+                      </p>
+                    </div>
+                  </div>
+                </>
+              }
+              data={[]} // Puedes dejarlo vacío si ya estás usando combinedData
+            />
+          </div>
 
+          {/* GRAFICA CONSUMO DE PESCADO //////////////////////////////////////////////////////////////////*/}
+
+          <div className="flex-1">
+            <StatCard
+              title="Incremento relativo 1980–2020: pescado vs población"
+              value={<span className="text-red-500">+220,20 %</span>}
+              changeText={
+                <>
+                  El consumo mundial de pescado aumentó un{" "}
+                  <strong>220,20 %</strong> desde 1980, mientras que la
+                  población creció un <strong>77,27 %</strong> en ese mismo
+                  periodo.
+                  <div className="pt-4 flex items-center gap-2">
+                    <Fish className="w-6 h-6  text-cyan-500" /> Incremento
+                    consumo de pescado mundial
+                  </div>
+                  <div className="pt-1 flex items-center gap-2">
+                    <PersonStanding className="w-6 h-6 text-neutral-50" />{" "}
+                    Incremento población mundial
+                  </div>
+                  <div className="mt-4 rounded-xl overflow-hidden">
+                    <ResponsiveContainer width="100%" height={160}>
+                      <LineChart data={combinedDataFish}>
+                        <XAxis
+                          dataKey="year"
+                          tickFormatter={(year) =>
+                            ["1980", "1990", "2000", "2010", "2020"].includes(
+                              year
+                            )
+                              ? year
+                              : ""
+                          }
+                        />
+                        <Tooltip content={<CustomTooltipFish />} />
+                        <Line
+                          type="monotone"
+                          dataKey="pescado"
+                          stroke="#06b6d4"
+                          strokeWidth={2}
+                          dot={false}
+                          name="Pescado"
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="poblacion"
+                          stroke="#fafafa"
+                          strokeWidth={2}
+                          dot={false}
+                          name="Población"
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                    <div className="pt-2 font-extralight">
+                      <p>FUENTES CONSULTADAS</p>
+                      <p>
+                        <a href="https://population.un.org/wpp" target="_blank">
+                          ONU – World Population Prospects
+                        </a>
+                      </p>
+                      <p>
+                        <a
+                          href="https://ourworldindata.org/meat-production"
+                          target="_blank"
+                        >
+                          FAO Food and Agriculture Organization – FAOSTAT
+                        </a>
+                      </p>
+                    </div>
+                  </div>
+                </>
+              }
+              data={[]} // Puedes dejarlo vacío si ya estás usando combinedData
+            />
+          </div>
+
+          {/* GRAFICA CONSUMO DE VERDURAS //////////////////////////////////////////////////////////////////*/}
+
+          <div className="flex-1">
+            <StatCard
+              title="Incremento relativo 1980–2020: verduras vs población"
+              value={<span className="text-red-500">+114,29 %</span>}
+              changeText={
+                <>
+                  El consumo mundial de verduras aumentó un{" "}
+                  <strong>114,29 %</strong> desde 1980, mientras que la
+                  población creció un <strong>77,27 %</strong> en ese mismo
+                  periodo.
+                  <div className="pt-4 flex items-center gap-2">
+                    <Leaf className="w-6 h-6  text-emerald-500" /> Incremento
+                    consumo de verduras mundial
+                  </div>
+                  <div className="pt-1 flex items-center gap-2">
+                    <PersonStanding className="w-6 h-6 text-neutral-50" />{" "}
+                    Incremento población mundial
+                  </div>
+                  <div className="mt-4 rounded-xl overflow-hidden">
+                    <ResponsiveContainer width="100%" height={160}>
+                      <LineChart data={combinedDataVegetables}>
+                        <XAxis
+                          dataKey="year"
+                          tickFormatter={(year) =>
+                            ["1980", "1990", "2000", "2010", "2020"].includes(
+                              year
+                            )
+                              ? year
+                              : ""
+                          }
+                        />
+                        <Tooltip content={<CustomTooltipVegetables />} />
+                        <Line
+                          type="monotone"
+                          dataKey="verduras"
+                          stroke="#10b981"
+                          strokeWidth={2}
+                          dot={false}
+                          name="Verduras"
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="poblacion"
+                          stroke="#fafafa"
+                          strokeWidth={2}
+                          dot={false}
+                          name="Población"
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                    <div className="pt-2 font-extralight">
+                      <p>FUENTES CONSULTADAS</p>
+                      <p>
+                        <a href="https://population.un.org/wpp" target="_blank">
+                          ONU – World Population Prospects
+                        </a>
+                      </p>
+                      <p>
+                        <a
+                          href="https://ourworldindata.org/meat-production"
+                          target="_blank"
+                        >
+                          FAO Food and Agriculture Organization – FAOSTAT
+                        </a>
+                      </p>
+                    </div>
+                  </div>
+                </>
+              }
+              data={[]} // Puedes dejarlo vacío si ya estás usando combinedData
+            />
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
